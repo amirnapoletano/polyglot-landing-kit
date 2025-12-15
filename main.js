@@ -24,6 +24,7 @@ const THEME_KEY = "landing-kit-theme";
 function applyTheme(theme) {
   body.setAttribute("data-theme", theme);
   if (!icon || !toggle) return;
+
   if (theme === "light") {
     icon.textContent = "☀︎";
     toggle.setAttribute("aria-pressed", "true");
@@ -41,7 +42,8 @@ function applyTheme(theme) {
     return;
   }
 
-  const prefersDark = window.matchMedia &&
+  const prefersDark =
+    window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches;
 
   applyTheme(prefersDark ? "dark" : "light");
@@ -57,47 +59,28 @@ if (toggle) {
   });
 }
 
-// Reveal on scroll
-const revealElements = document.querySelectorAll(".reveal");
-
-const observer = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.style.animationPlayState = "running";
-        observer.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.15 }
-);
-
-revealElements.forEach((el) => {
-  el.style.animationPlayState = "paused";
-  observer.observe(el);
-});
-
 // Reveal on scroll (respects reduced motion)
-const prefersReducedMotion = window.matchMedia &&
+const prefersReducedMotion =
+  window.matchMedia &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 if (!prefersReducedMotion) {
-  const revealElements = document.querySelectorAll(".reveal");
+  const revealNodes = document.querySelectorAll(".reveal");
 
-  const observer = new IntersectionObserver(
+  const revealObserver = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.style.animationPlayState = "running";
-          observer.unobserve(entry.target);
+          revealObserver.unobserve(entry.target);
         }
       });
     },
     { threshold: 0.15 }
   );
 
-  revealElements.forEach((el) => {
+  revealNodes.forEach((el) => {
     el.style.animationPlayState = "paused";
-    observer.observe(el);
+    revealObserver.observe(el);
   });
 }
