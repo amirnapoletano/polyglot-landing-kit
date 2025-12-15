@@ -56,3 +56,48 @@ if (toggle) {
     window.localStorage.setItem(THEME_KEY, next);
   });
 }
+
+// Reveal on scroll
+const revealElements = document.querySelectorAll(".reveal");
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = "running";
+        observer.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.15 }
+);
+
+revealElements.forEach((el) => {
+  el.style.animationPlayState = "paused";
+  observer.observe(el);
+});
+
+// Reveal on scroll (respects reduced motion)
+const prefersReducedMotion = window.matchMedia &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (!prefersReducedMotion) {
+  const revealElements = document.querySelectorAll(".reveal");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = "running";
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+
+  revealElements.forEach((el) => {
+    el.style.animationPlayState = "paused";
+    observer.observe(el);
+  });
+}
