@@ -11,6 +11,13 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 
     event.preventDefault();
     target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // If the mobile nav is open, close it after navigating
+    if (body.getAttribute("data-nav") === "open") {
+      body.removeAttribute("data-nav");
+      const navToggle = document.querySelector(".nav-toggle");
+      if (navToggle) navToggle.setAttribute("aria-expanded", "false");
+    }
   });
 });
 
@@ -56,6 +63,45 @@ if (toggle) {
     const next = current === "light" ? "dark" : "light";
     applyTheme(next);
     window.localStorage.setItem(THEME_KEY, next);
+  });
+}
+
+// Mobile nav (simple drawer dropdown)
+const navToggle = document.querySelector(".nav-toggle");
+const nav = document.querySelector("#site-nav");
+
+function setNav(open) {
+  if (!navToggle || !nav) return;
+
+  if (open) {
+    body.setAttribute("data-nav", "open");
+    navToggle.setAttribute("aria-expanded", "true");
+  } else {
+    body.removeAttribute("data-nav");
+    navToggle.setAttribute("aria-expanded", "false");
+  }
+}
+
+if (navToggle && nav) {
+  navToggle.addEventListener("click", () => {
+    const isOpen = body.getAttribute("data-nav") === "open";
+    setNav(!isOpen);
+  });
+
+  // Close menu when a nav link is clicked
+  nav.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener("click", () => setNav(false));
+  });
+
+  // Close menu when tapping outside
+  document.addEventListener("click", (event) => {
+    if (body.getAttribute("data-nav") !== "open") return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const clickedToggle = target.closest(".nav-toggle");
+    const clickedNav = target.closest("#site-nav");
+    if (!clickedToggle && !clickedNav) setNav(false);
   });
 }
 
